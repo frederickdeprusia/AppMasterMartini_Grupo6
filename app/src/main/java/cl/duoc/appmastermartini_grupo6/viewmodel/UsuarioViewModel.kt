@@ -1,5 +1,6 @@
 package cl.duoc.appmastermartini_grupo6.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import cl.duoc.appmastermartini_grupo6.model.UsuarioUiState
 import cl.duoc.appmastermartini_grupo6.model.UsuarioErrores
@@ -41,14 +42,25 @@ class UsuarioViewModel : ViewModel() {
     }
 
     // Valida todos los campos; guarda los errores en el estdo y retorna true si no hay ninguno
-    fun validarFormulario(): Boolean{
+    fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
         val errores = UsuarioErrores(
             nombre = if (estadoActual.nombre.isBlank()) "Campo obligatorio" else null,
-            correo = if (estadoActual.correo.isBlank()) "Campo obligatorio" else null,
-            clave = if (estadoActual.clave.isBlank()) "Campo obligatorio" else null,
+            // Primero revisa que no esté vacío, luego que tenga formato de correo
+            correo = when {
+                estadoActual.correo.isBlank() -> "Campo obligatorio"
+                !Patterns.EMAIL_ADDRESS.matcher(estadoActual.correo).matches() -> "Correo inválido"
+                else -> null
+            },
+            // Primero revisa que no esté vacía, luego el largo mínimo
+            clave = when {
+                estadoActual.clave.isBlank() -> "Campo obligatorio"
+                estadoActual.clave.length < 6 -> "Debe tener al menos 6 caracteres"
+                else -> null
+            },
             direccion = if (estadoActual.direccion.isBlank()) "Campo obligatorio" else null
         )
+
         val hayErrores = listOfNotNull(
             errores.nombre,
             errores.correo,

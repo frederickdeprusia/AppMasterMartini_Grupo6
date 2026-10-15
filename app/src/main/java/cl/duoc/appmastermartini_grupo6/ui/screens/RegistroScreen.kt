@@ -112,8 +112,11 @@ fun RegistroScreen(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
                 checked = estado.aceptaTerminos,
-                onCheckedChange = viewModel::onTerminosChange
+                onCheckedChange = viewModel::onTerminosChange,
             )
+            estado.errores.terminos?.let {
+                Text(text = it, color = MaterialTheme.colorScheme.error)
+            }
             Spacer(Modifier.width(8.dp))
             Text("Acepto los términos y condiciones")
         }

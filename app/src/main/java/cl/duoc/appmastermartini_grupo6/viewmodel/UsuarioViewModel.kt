@@ -38,7 +38,7 @@ class UsuarioViewModel : ViewModel() {
 
     // Actualiza el checkbox de terminos
     fun onTerminosChange(valor: Boolean) {
-        _estado.update { it.copy(aceptaTerminos = valor)}
+        _estado.update { it.copy(aceptaTerminos = valor, errores = it.errores.copy(terminos = null))}
     }
 
     // Valida todos los campos; guarda los errores en el estdo y retorna true si no hay ninguno
@@ -58,14 +58,18 @@ class UsuarioViewModel : ViewModel() {
                 estadoActual.clave.length < 6 -> "Debe tener al menos 6 caracteres"
                 else -> null
             },
-            direccion = if (estadoActual.direccion.isBlank()) "Campo obligatorio" else null
+            direccion = if (estadoActual.direccion.isBlank()) "Campo obligatorio" else null,
+
+            // validacion checkbox termino
+            terminos = if (!estadoActual.aceptaTerminos) "Debes aceptar los términos" else null
         )
 
         val hayErrores = listOfNotNull(
             errores.nombre,
             errores.correo,
             errores.clave,
-            errores.direccion
+            errores.direccion,
+            errores.terminos
         ).isNotEmpty()
 
         _estado.update { it.copy(errores = errores) }

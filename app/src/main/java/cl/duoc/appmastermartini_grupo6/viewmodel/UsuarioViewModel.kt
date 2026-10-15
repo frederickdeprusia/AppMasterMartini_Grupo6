@@ -19,7 +19,7 @@ class UsuarioViewModel : ViewModel() {
     fun onNombreChange(valor: String){
         _estado.update { it.copy(nombre = valor, errores = it.errores.copy(nombre = null)) }
     }
-    
+
     // Actualiza el correo y limpia s error
     fun onCorreoChange(valor: String) {
         _estado.update { it.copy(correo = valor, errores = it.errores.copy(correo = null))}

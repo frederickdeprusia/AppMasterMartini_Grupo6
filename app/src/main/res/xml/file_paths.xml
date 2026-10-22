@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Guía 13: carpetas que FileProvider puede compartir con la app de cámara.
+     "imagenes/" dentro de la caché privada de la app (context.cacheDir). -->
+<paths>
+    <cache-path
+        name="imagenes"
+        path="imagenes/" />
+</paths>

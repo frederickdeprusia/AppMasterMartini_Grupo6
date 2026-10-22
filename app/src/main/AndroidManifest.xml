@@ -2,6 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Guía 13: la cámara es opcional; la app se puede instalar en equipos sin cámara -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- Guía 13: permiso de cámara (se solicita en tiempo de ejecución en PerfilScreen) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Guía 13: lectura de imágenes. Android 13+ (API 33) usa READ_MEDIA_IMAGES;
+         versiones anteriores usan READ_EXTERNAL_STORAGE. El selector GetContent
+         funciona sin pedirlos en tiempo de ejecución porque el usuario elige la imagen. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,6 +39,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Guía 13: FileProvider comparte de forma segura el archivo temporal donde la cámara guarda la foto -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

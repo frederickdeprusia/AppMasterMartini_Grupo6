@@ -48,6 +48,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
     implementation("androidx.compose.material3:material3-window-size-class")
+    // Guía 12: persistencia local con DataStore Preferences
+    implementation(libs.androidx.datastore.preferences)
+    // Guía 13: Coil para cargar imágenes desde un Uri (galería / cámara)
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

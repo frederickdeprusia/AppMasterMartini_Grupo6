@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import cl.duoc.appmastermartini_grupo6.ui.theme.AppMasterMartini_Grupo6Theme
 import cl.duoc.appmastermartini_grupo6.viewmodel.UsuarioViewModel
+import cl.duoc.appmastermartini_grupo6.navigation.Rutas
 
 // Pantalla de registro: muestra el formulario y delega la lógica al ViewModel
 @Composable
@@ -125,7 +126,11 @@ fun RegistroScreen(
         Button(
             onClick = {
                 if (viewModel.validarFormulario()) {
-                    navController.navigate("resumen")
+                    // Va al Home y BORRA el registro del historial:
+                    // así el botón "atrás" no vuelve al formulario
+                    navController.navigate(Rutas.HOME) {
+                        popUpTo(Rutas.REGISTRO) { inclusive = true }
+                    }
                 }
             },
             modifier = Modifier

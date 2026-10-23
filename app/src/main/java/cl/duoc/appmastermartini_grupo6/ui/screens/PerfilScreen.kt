@@ -43,7 +43,8 @@ import kotlinx.coroutines.delay
 
 // Guía 13 - Pantalla de perfil con dos recursos nativos: GALERÍA y CÁMARA.
 @Composable
-fun PerfilScreen(viewModel: PerfilViewModel) {
+fun PerfilScreen(viewModel: PerfilViewModel,
+                 onVerDatos: () -> Unit = {} ) {
     val context = LocalContext.current
 
     // Estado observado desde el ViewModel (StateFlow -> collectAsState)
@@ -160,6 +161,16 @@ fun PerfilScreen(viewModel: PerfilViewModel) {
             TextButton(onClick = { viewModel.quitarImagen() }) {
                 Text("Quitar foto")
             }
+        }
+
+        //Acceso a los datos ingresados en el registro (T4)
+        OutlinedButton(
+            onClick = onVerDatos,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Ver mis datos de registro")
         }
 
         // Retroalimentación animada

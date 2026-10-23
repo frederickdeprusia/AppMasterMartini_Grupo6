@@ -59,5 +59,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
+    // T4: íconos de Material (Home, Recetas, Cursos, Perfil, flecha volver...)
+    implementation(libs.androidx.compose.material.icons.extended)
 }

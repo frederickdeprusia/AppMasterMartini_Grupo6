@@ -5,55 +5,145 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import cl.duoc.appmastermartini_grupo6.ui.components.BarraInferior
+import cl.duoc.appmastermartini_grupo6.ui.components.BarraSuperior
+import cl.duoc.appmastermartini_grupo6.ui.components.RielLateral
 import cl.duoc.appmastermartini_grupo6.ui.screens.AccesibilidadScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.EnConstruccionScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.HomeScreenAdaptable
 import cl.duoc.appmastermartini_grupo6.ui.screens.PerfilScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.RegistroScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.ResumenScreen
+import cl.duoc.appmastermartini_grupo6.ui.utils.obtenerWindowSizeClass
 import cl.duoc.appmastermartini_grupo6.viewmodel.EstadoViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.PerfilViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.UsuarioViewModel
 
-// Define las rutas de la app y qué pantalla muestra cada una
+// Define la estructura de TODA la app: barra superior, barra inferior o riel lateral,
+// y qué pantalla se muestra en cada ruta.
 @Composable
 fun AppNavigation(estadoViewModel: EstadoViewModel) {
-    // Controlador que recuerda en qué pantalla estamos y permite navegar
+    // El controlador recuerda en qué pantalla estamos y permite navegar
     val navController = rememberNavController()
 
-    // El ViewModel se crea UNA sola vez aquí y se comparte con ambas pantallas
+    // ViewModels compartidos entre pantallas (se crean UNA sola vez aquí)
     val usuarioViewModel: UsuarioViewModel = viewModel()
-
-    // Guía 13: ViewModel de perfil compartido (la foto se mantiene al navegar entre pantallas)
     val perfilViewModel: PerfilViewModel = viewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = "registro",
-        // Guía 12 - animación extra: transición suave al cambiar de pantalla
-        enterTransition = {
-            fadeIn(tween(300)) + slideInHorizontally(tween(300)) { ancho -> ancho / 4 }
+    // Ruta actual como ESTADO: cada vez que navegamos, esta parte se vuelve a dibujar
+    val entradaActual by navController.currentBackStackEntryAsState()
+    val rutaActual = entradaActual?.destination?.route
+
+    // ¿Estamos en una de las 4 secciones principales?
+    val esSeccionPrincipal = DestinoPrincipal.entries.any { it.ruta == rutaActual }
+    // En el registro no mostramos barras (el usuario aún no entra a la app)
+    val mostrarBarras = rutaActual != null && rutaActual != Rutas.REGISTRO
+    // Diseño adaptable: en pantallas que no son compactas usamos riel lateral
+    val usarRielLateral =
+        obtenerWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
+
+    // Navegar entre secciones principales sin acumular pantallas repetidas
+    fun irASeccion(ruta: String) {
+        navController.navigate(ruta) {
+            popUpTo(Rutas.HOME) { saveState = true } // deja solo Home debajo
+            launchSingleTop = true                    // no duplica si ya estoy ahí
+            restoreState = true                       // recupera el scroll al volver
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            if (mostrarBarras) {
+                BarraSuperior(
+                    titulo = Rutas.titulo(rutaActual),
+                    mostrarVolver = !esSeccionPrincipal,
+                    onVolver = { navController.popBackStack() },
+                    onAccesibilidad = {
+                        navController.navigate(Rutas.ACCESIBILIDAD) { launchSingleTop = true }
+                    }
+                )
+            }
         },
-        exitTransition = { fadeOut(tween(300)) },
-        popEnterTransition = { fadeIn(tween(300)) },
-        popExitTransition = {
-            fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { ancho -> ancho / 4 }
+        bottomBar = {
+            if (mostrarBarras && !usarRielLateral) {
+                BarraInferior(
+                    rutaActual = rutaActual,
+                    onNavegar = { ruta -> irASeccion(ruta) }
+                )
+            }
         }
-    ) {
-        composable("registro") {
-            RegistroScreen(navController, usuarioViewModel)
-        }
-        composable("resumen") {
-            ResumenScreen(navController, usuarioViewModel)
-        }
-        composable("accesibilidad") {
-            AccesibilidadScreen(viewModel = estadoViewModel)
-        }
-        composable("perfil") {
-            PerfilScreen(viewModel = perfilViewModel)
+    ) { innerPadding ->
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (mostrarBarras && usarRielLateral) {
+                RielLateral(
+                    rutaActual = rutaActual,
+                    onNavegar = { ruta -> irASeccion(ruta) }
+                )
+            }
+
+            NavHost(
+                navController = navController,
+                startDestination = Rutas.REGISTRO,
+                modifier = Modifier.weight(1f),
+                // Guía 12: transiciones animadas entre pantallas
+                enterTransition = {
+                    fadeIn(tween(300)) + slideInHorizontally(tween(300)) { ancho -> ancho / 4 }
+                },
+                exitTransition = { fadeOut(tween(300)) },
+                popEnterTransition = { fadeIn(tween(300)) },
+                popExitTransition = {
+                    fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { ancho -> ancho / 4 }
+                }
+            ) {
+                composable(Rutas.REGISTRO) {
+                    RegistroScreen(navController, usuarioViewModel)
+                }
+                composable(Rutas.HOME) {
+                    HomeScreenAdaptable(
+                        onVerRecetas = { irASeccion(Rutas.RECETAS) },
+                        onVerVideos = { navController.navigate(Rutas.VIDEOS) },
+                        onVerCursos = { irASeccion(Rutas.CURSOS) }
+                    )
+                }
+                composable(Rutas.RECETAS) {
+                    EnConstruccionScreen(seccion = "Recetas")   // se reemplaza en T8
+                }
+                composable(Rutas.CURSOS) {
+                    EnConstruccionScreen(seccion = "Cursos")    // se reemplaza en T9
+                }
+                composable(Rutas.VIDEOS) {
+                    EnConstruccionScreen(seccion = "Videos")    // se reemplaza en T9
+                }
+                composable(Rutas.PERFIL) {
+                    PerfilScreen(
+                        viewModel = perfilViewModel,
+                        onVerDatos = { navController.navigate(Rutas.RESUMEN) }
+                    )
+                }
+                composable(Rutas.RESUMEN) {
+                    ResumenScreen(usuarioViewModel)
+                }
+                composable(Rutas.ACCESIBILIDAD) {
+                    AccesibilidadScreen(viewModel = estadoViewModel)
+                }
+            }
         }
     }
 }

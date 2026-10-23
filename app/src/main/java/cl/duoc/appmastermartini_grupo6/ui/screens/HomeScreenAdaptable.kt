@@ -4,13 +4,18 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import cl.duoc.appmastermartini_grupo6.ui.utils.obtenerWindowSizeClass
 
-// Elige qué versión de la pantalla mostrar según el ancho del dispositivo
+// Elige qué versión del Home mostrar según el ANCHO de la pantalla
+// Indica a cada una que hacer con sus botones
 @Composable
-fun HomeScreenAdaptable() {
+fun HomeScreenAdaptable(
+    onVerRecetas: () -> Unit,
+    onVerVideos: () -> Unit,
+    onVerCursos: () -> Unit
+) {
     val windowSizeClass = obtenerWindowSizeClass()
     when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> HomeScreenCompacta()
-        WindowWidthSizeClass.Medium -> HomeScreenMediana()
-        else -> HomeScreenExpandida()
+        WindowWidthSizeClass.Compact -> HomeScreenCompacta(onVerRecetas, onVerVideos, onVerCursos)
+        WindowWidthSizeClass.Medium -> HomeScreenMediana(onVerRecetas, onVerVideos, onVerCursos)
+        else -> HomeScreenExpandida(onVerRecetas, onVerVideos, onVerCursos)
     }
 }

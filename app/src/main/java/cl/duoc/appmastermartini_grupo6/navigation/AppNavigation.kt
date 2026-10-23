@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -31,6 +32,12 @@ import cl.duoc.appmastermartini_grupo6.ui.utils.obtenerWindowSizeClass
 import cl.duoc.appmastermartini_grupo6.viewmodel.EstadoViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.PerfilViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.UsuarioViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import cl.duoc.appmastermartini_grupo6.ui.screens.DetalleRecetaScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.RecetasScreen
+import cl.duoc.appmastermartini_grupo6.viewmodel.RecetasViewModel
+
 
 // Define la estructura de TODA la app: barra superior, barra inferior o riel lateral,
 // y qué pantalla se muestra en cada ruta.
@@ -42,6 +49,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     // ViewModels compartidos entre pantallas (se crean UNA sola vez aquí)
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
+    val recetasViewModel: RecetasViewModel = viewModel()
 
     // Ruta actual como ESTADO: cada vez que navegamos, esta parte se vuelve a dibujar
     val entradaActual by navController.currentBackStackEntryAsState()
@@ -122,8 +130,19 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                         onVerCursos = { irASeccion(Rutas.CURSOS) }
                     )
                 }
-                composable(Rutas.RECETAS) {
-                    EnConstruccionScreen(seccion = "Recetas")   // se reemplaza en T8
+                composable(Rutas.RECETAS){
+                    RecetasScreen(
+                        viewModel = recetasViewModel,
+                        onRecetaClick = { id -> navController.navigate(Rutas.detalleReceta(id))}
+                    )
+                }
+                composable(
+                    route = Rutas.DETALLE_RECETA,
+                    arguments = listOf(navArgument("id") { type = NavType.IntType})
+                ){entrada ->
+                    //leemos el {id} de la ruta
+                    val id = entrada.arguments?.getInt("id") ?: 0
+                    DetalleRecetaScreen(receta = recetasViewModel.obtenerReceta(id))
                 }
                 composable(Rutas.CURSOS) {
                     EnConstruccionScreen(seccion = "Cursos")    // se reemplaza en T9

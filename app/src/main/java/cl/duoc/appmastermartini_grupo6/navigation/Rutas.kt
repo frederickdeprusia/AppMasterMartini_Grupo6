@@ -13,6 +13,10 @@ object Rutas {
     const val RESUMEN = "resumen"
     const val ACCESIBILIDAD = "accesibilidad"
 
+    const val DETALLE_RECETA = "detalle_receta/{id}"
+
+    fun detalleReceta(id: Int): String = "detalle_receta/$id"
+
     // titulo que se muestra en la barra superior según la pantalla actual
     fun titulo(ruta: String?): String = when (ruta) {
         HOME -> "Master Martini"
@@ -22,6 +26,7 @@ object Rutas {
         PERFIL -> "Mi Perfil"
         RESUMEN -> "Resumen"
         ACCESIBILIDAD -> "Accesibilidad"
+        DETALLE_RECETA -> "Receta"
         else -> "Master Martini"
     }
 }

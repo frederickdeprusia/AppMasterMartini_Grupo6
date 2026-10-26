@@ -23,7 +23,6 @@ import cl.duoc.appmastermartini_grupo6.ui.components.BarraInferior
 import cl.duoc.appmastermartini_grupo6.ui.components.BarraSuperior
 import cl.duoc.appmastermartini_grupo6.ui.components.RielLateral
 import cl.duoc.appmastermartini_grupo6.ui.screens.AccesibilidadScreen
-import cl.duoc.appmastermartini_grupo6.ui.screens.EnConstruccionScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.HomeScreenAdaptable
 import cl.duoc.appmastermartini_grupo6.ui.screens.PerfilScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.RegistroScreen
@@ -37,6 +36,10 @@ import androidx.navigation.navArgument
 import cl.duoc.appmastermartini_grupo6.ui.screens.DetalleRecetaScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.RecetasScreen
 import cl.duoc.appmastermartini_grupo6.viewmodel.RecetasViewModel
+import cl.duoc.appmastermartini_grupo6.ui.screens.CursosScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.VideosScreen
+import cl.duoc.appmastermartini_grupo6.viewmodel.CursosViewModel
+import cl.duoc.appmastermartini_grupo6.viewmodel.VideosViewModel
 
 
 // Define la estructura de TODA la app: barra superior, barra inferior o riel lateral,
@@ -50,6 +53,8 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
     val recetasViewModel: RecetasViewModel = viewModel()
+    val cursosViewModel: CursosViewModel = viewModel()
+    val videosViewModel: VideosViewModel = viewModel()
 
     // Ruta actual como ESTADO: cada vez que navegamos, esta parte se vuelve a dibujar
     val entradaActual by navController.currentBackStackEntryAsState()
@@ -145,10 +150,10 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                     DetalleRecetaScreen(receta = recetasViewModel.obtenerReceta(id))
                 }
                 composable(Rutas.CURSOS) {
-                    EnConstruccionScreen(seccion = "Cursos")    // se reemplaza en T9
+                    CursosScreen(viewModel = cursosViewModel)
                 }
                 composable(Rutas.VIDEOS) {
-                    EnConstruccionScreen(seccion = "Videos")    // se reemplaza en T9
+                    VideosScreen(viewModel = videosViewModel)
                 }
                 composable(Rutas.PERFIL) {
                     PerfilScreen(

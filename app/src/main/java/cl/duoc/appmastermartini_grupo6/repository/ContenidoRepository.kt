@@ -2,6 +2,8 @@ package cl.duoc.appmastermartini_grupo6.repository
 
 import cl.duoc.appmastermartini_grupo6.model.CategoriaReceta
 import cl.duoc.appmastermartini_grupo6.model.Receta
+import cl.duoc.appmastermartini_grupo6.model.Curso
+import cl.duoc.appmastermartini_grupo6.model.Video
 
 // El Repository es la ÚNICA puerta de entrada a los datos de contenido.
 // (datos ficticios para el MVP).
@@ -199,9 +201,141 @@ class ContenidoRepository {
         )
     )
 
+    private val cursos = listOf(
+        Curso(
+            id= 1,
+            nombre = "Chocolatería básica: temperado y bombones",
+            categoria = CategoriaReceta.CHOCOLATERIA,
+            descripcion = "Aprende a temperar chocolate de cobertura, moldear bombones y preparar ganaches para tu vitrina.",
+            nivel = "Inicial",
+            duracionHoras = 12,
+            modalidad = "Presencial",
+            chef = "Chef Andrea Soto"
+        ),
+        Curso(
+            id = 2,
+            nombre = "Pastelería de vitrina",
+            categoria = CategoriaReceta.PASTELERIA,
+            descripcion = "Tortas, tartaletas y postres individuales con terminaciones profesionales para la venta.",
+            nivel = "Intermedio",
+            duracionHoras = 16,
+            modalidad = "Presencial",
+            chef = "Chef Rodrigo Fuentes"
+        ),
+        Curso(
+            id = 3,
+            nombre = "Heladería artesanal",
+            categoria = CategoriaReceta.HELADERIA,
+            descripcion = "Bases de helado, balanceo de ingredientes y sabores de temporada para heladerías pequeñas.",
+            nivel = "Inicial",
+            duracionHoras = 8,
+            modalidad = "Online",
+            chef = "Chef Camila Herrera"
+        ),
+        Curso(
+            id = 4,
+            nombre = "Bollería y masas de hoja",
+            categoria = CategoriaReceta.BOLLERIA,
+            descripcion = "Croissants, pains au chocolat y hojaldre: laminado, fermentación y horneado.",
+            nivel = "Avanzado",
+            duracionHoras = 20,
+            modalidad = "Presencial",
+            chef = "Chef Rodrigo Fuentes"
+        ),
+        Curso(
+            id = 5,
+            nombre = "Galletas decoradas para emprender",
+            categoria = CategoriaReceta.GALLETAS,
+            descripcion = "Masas que no se deforman, glasé real y técnicas de decoración para vender por encargo.",
+            nivel = "Inicial",
+            duracionHoras = 6,
+            modalidad = "Online",
+            chef = "Chef Andrea Soto"
+        ),
+        Curso(
+            id = 6,
+            nombre = "Empanadas y productos de horneo",
+            categoria = CategoriaReceta.EMPANADAS,
+            descripcion = "Masas para empanadas horneadas y fritas, rellenos tradicionales y costos de producción.",
+            nivel = "Inicial",
+            duracionHoras = 8,
+            modalidad = "Presencial",
+            chef = "Chef Luis Morales"
+        ),
+        Curso(
+            id = 7,
+            nombre = "Panadería artesanal con masa madre",
+            categoria = CategoriaReceta.PANADERIA,
+            descripcion = "Cultivo de masa madre, hidratación y formado de panes rústicos.",
+            nivel = "Intermedio",
+            duracionHoras = 12,
+            modalidad = "Presencial",
+            chef = "Chef Luis Morales"
+        )
+    )
+
+    // Las url abren una búsqueda en YouTube del tema.
+    // Cuando Master Martini entregue sus videos, se reemplazan por los enlaces reales.
+    private val videos = listOf(
+        Video(
+            id = 1,
+            titulo = "Cómo temperar chocolate",
+            categoria = CategoriaReceta.CHOCOLATERIA,
+            descripcion = "Método de siembra para lograr un chocolate brillante y crocante.",
+            duracion = "8:45",
+            url = "https://www.youtube.com/results?search_query=como+temperar+chocolate"
+        ),
+        Video(
+            id = 2,
+            titulo = "Galletas de mantequilla paso a paso",
+            categoria = CategoriaReceta.GALLETAS,
+            descripcion = "Desde el cremado hasta el horneado perfecto.",
+            duracion = "6:20",
+            url = "https://www.youtube.com/results?search_query=galletas+de+mantequilla"
+        ),
+        Video(
+            id = 3,
+            titulo = "Laminado de croissants",
+            categoria = CategoriaReceta.BOLLERIA,
+            descripcion = "Cómo integrar la mantequilla y dar las vueltas a la masa.",
+            duracion = "12:10",
+            url = "https://www.youtube.com/results?search_query=laminado+croissant"
+        ),
+        Video(
+            id = 4,
+            titulo = "Base de helado artesanal",
+            categoria = CategoriaReceta.HELADERIA,
+            descripcion = "Pasteurización, maduración y mantecado de una base de vainilla.",
+            duracion = "9:30",
+            url = "https://www.youtube.com/results?search_query=base+helado+artesanal"
+        ),
+        Video(
+            id = 5,
+            titulo = "Merengue italiano para tortas",
+            categoria = CategoriaReceta.PASTELERIA,
+            descripcion = "Almíbar a punto y merengue estable para cubrir y decorar.",
+            duracion = "7:15",
+            url = "https://www.youtube.com/results?search_query=merengue+italiano"
+        ),
+        Video(
+            id = 6,
+            titulo = "Repulgue de empanadas",
+            categoria = CategoriaReceta.EMPANADAS,
+            descripcion = "Tres formas de cerrar empanadas para que no se abran al hornear.",
+            duracion = "5:40",
+            url = "https://www.youtube.com/results?search_query=repulgue+empanadas"
+        )
+    )
+
     // Devuelve todas las recetas
     fun obtenerRecetas(): List<Receta> = recetas
 
     // Busca una receta por su id. Devuelve null si no existe (por eso el "?")
     fun obtenerRecetaPorId(id: Int): Receta? = recetas.find { it.id == id }
+
+    // Devuelve todos los cursos
+    fun obtenerCursos(): List<Curso> = cursos
+
+    //Devuelve todos los videos
+    fun obtenerVideos(): List<Video> = videos
 }

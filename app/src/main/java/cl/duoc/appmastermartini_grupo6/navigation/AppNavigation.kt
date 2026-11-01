@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -146,11 +147,16 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                 }
                 composable(
                     route = Rutas.DETALLE_RECETA,
-                    arguments = listOf(navArgument("id") { type = NavType.IntType})
-                ){entrada ->
-                    //leemos el {id} de la ruta
+                    arguments = listOf(navArgument("id") { type = NavType.IntType })
+                ) { entrada ->
+                    // leemos el {id} de la ruta
                     val id = entrada.arguments?.getInt("id") ?: 0
-                    DetalleRecetaScreen(receta = recetasViewModel.obtenerReceta(id))
+                    val estadoRecetas by recetasViewModel.estado.collectAsState()
+                    DetalleRecetaScreen(
+                        receta = recetasViewModel.obtenerReceta(id),
+                        esFavorita = id in estadoRecetas.favoritos,
+                        onFavoritoClick = { recetasViewModel.onFavoritoClick(id) }
+                    )
                 }
                 composable(Rutas.CURSOS) {
                     CursosScreen(viewModel = cursosViewModel)

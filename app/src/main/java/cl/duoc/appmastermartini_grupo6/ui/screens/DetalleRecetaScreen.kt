@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,13 +34,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cl.duoc.appmastermartini_grupo6.model.Receta
 import cl.duoc.appmastermartini_grupo6.repository.ContenidoRepository
+import cl.duoc.appmastermartini_grupo6.ui.components.BotonFavorito
 import cl.duoc.appmastermartini_grupo6.ui.components.ImagenReceta
 import cl.duoc.appmastermartini_grupo6.ui.theme.AppMasterMartini_Grupo6Theme
 
-// Detalle de una receta. Recibe la receta (o null si el id no existe).
+// Detalle de una receta. Recibe la receta (o null si el id no existe),
+// si es favorita y qué hacer al tocar el corazón (T15).
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DetalleRecetaScreen(receta: Receta?) {
+fun DetalleRecetaScreen(
+    receta: Receta?,
+    esFavorita: Boolean = false,
+    onFavoritoClick: () -> Unit = {}
+) {
     // Caso de error: id inválido -> mensaje en vez de que la app se caiga
     if (receta == null) {
         Box(
@@ -69,11 +76,16 @@ fun DetalleRecetaScreen(receta: Receta?) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = receta.nombre,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // Título + corazón de favoritos (T15): el título ocupa el espacio sobrante
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = receta.nombre,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
+                )
+                BotonFavorito(esFavorita = esFavorita, onClick = onFavoritoClick)
+            }
             Text(text = receta.descripcion, style = MaterialTheme.typography.bodyLarge)
 
             // FlowRow: pone los datos en fila y salta de línea si no caben (útil con letra grande)
@@ -147,6 +159,17 @@ private fun DatoReceta(icono: ImageVector, texto: String) {
 fun DetalleRecetaPreview() {
     AppMasterMartini_Grupo6Theme {
         DetalleRecetaScreen(receta = ContenidoRepository().obtenerRecetaPorId(1))
+    }
+}
+
+@Preview(name = "Detalle - con favorita", showBackground = true, widthDp = 360, heightDp = 1200)
+@Composable
+fun DetalleRecetaFavoritaPreview() {
+    AppMasterMartini_Grupo6Theme {
+        DetalleRecetaScreen(
+            receta = ContenidoRepository().obtenerRecetaPorId(1),
+            esFavorita = true
+        )
     }
 }
 

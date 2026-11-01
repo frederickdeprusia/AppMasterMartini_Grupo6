@@ -17,6 +17,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,7 +44,9 @@ fun RecetasScreen(
     RecetasContenido(
         estado = estado,
         onBusquedaChange = viewModel::onBusquedaChange,
-        onRecetaClick = onRecetaClick
+        onRecetaClick = onRecetaClick,
+        onFavoritoClick = viewModel::onFavoritoClick,
+        onSoloFavoritosChange = viewModel::onSoloFavoritosChange
     )
 }
 
@@ -49,7 +55,9 @@ fun RecetasScreen(
 fun RecetasContenido(
     estado: RecetasUiState,
     onBusquedaChange: (String) -> Unit,
-    onRecetaClick: (Int) -> Unit
+    onRecetaClick: (Int) -> Unit,
+    onFavoritoClick: (Int) -> Unit = {},
+    onSoloFavoritosChange: (Boolean) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -76,10 +84,28 @@ fun RecetasContenido(
                 .padding(vertical = 12.dp)
         )
 
+        // Filtro "Mis favoritos"
+        FilterChip(
+            selected = estado.soloFavoritos,
+            onClick = { onSoloFavoritosChange(!estado.soloFavoritos) },
+            label = { Text("Mis favoritos", style = MaterialTheme.typography.bodyLarge) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null,
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                )
+            },
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
         if (estado.recetas.isEmpty()) {
             // Retroalimentación cuando la búsqueda no encuentra nada
             Text(
-                text = "No encontramos recetas para \"${estado.busqueda}\".",
+                text = if (estado.soloFavoritos && estado.busqueda.isBlank())
+                    "Aún no tienes recetas favoritas. Toca el corazón de una receta para guardarla."
+                else
+                    "No encontramos recetas para \"${estado.busqueda}\".",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 24.dp)
             )
@@ -97,6 +123,8 @@ fun RecetasContenido(
                     RecetaCard(
                         receta = receta,
                         onClick = { onRecetaClick(receta.id) },
+                        esFavorita = receta.id in estado.favoritos,
+                        onFavoritoClick = { onFavoritoClick(receta.id) },
                         // Animación: las tarjetas se reacomodan suavemente al filtrar
                         modifier = Modifier.animateItem()
                     )

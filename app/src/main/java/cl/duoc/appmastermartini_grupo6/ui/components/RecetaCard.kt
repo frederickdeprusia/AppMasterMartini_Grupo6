@@ -24,7 +24,9 @@ import cl.duoc.appmastermartini_grupo6.ui.theme.AppMasterMartini_Grupo6Theme
 fun RecetaCard(
     receta: Receta,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    esFavorita: Boolean = false,
+    onFavoritoClick: () -> Unit = {}
 ) {
     Card(
         onClick = onClick,
@@ -58,6 +60,8 @@ fun RecetaCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            // Corazón de favoritos (T15): al costado derecho, fuera del Column
+            BotonFavorito(esFavorita = esFavorita, onClick = onFavoritoClick)
         }
     }
 }

@@ -4,6 +4,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import cl.duoc.appmastermartini_grupo6.ui.screens.PerfilNegocioScreen
+import cl.duoc.appmastermartini_grupo6.viewmodel.PerfilNegocioViewModel
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,6 +57,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     val recetasViewModel: RecetasViewModel = viewModel()
     val cursosViewModel: CursosViewModel = viewModel()
     val videosViewModel: VideosViewModel = viewModel()
+    val perfilNegocioViewModel: PerfilNegocioViewModel = viewModel()
 
     // Ruta actual como ESTADO: cada vez que navegamos, esta parte se vuelve a dibujar
     val entradaActual by navController.currentBackStackEntryAsState()
@@ -158,11 +161,15 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                 composable(Rutas.PERFIL) {
                     PerfilScreen(
                         viewModel = perfilViewModel,
-                        onVerDatos = { navController.navigate(Rutas.RESUMEN) }
+                        onVerDatos = { navController.navigate(Rutas.RESUMEN) },
+                        onVerNegocio = { navController.navigate(Rutas.PERFIL_NEGOCIO) }
                     )
                 }
                 composable(Rutas.RESUMEN) {
                     ResumenScreen(usuarioViewModel)
+                }
+                composable(Rutas.PERFIL_NEGOCIO) {
+                    PerfilNegocioScreen(viewModel = perfilNegocioViewModel)
                 }
                 composable(Rutas.ACCESIBILIDAD) {
                     AccesibilidadScreen(viewModel = estadoViewModel)

@@ -12,6 +12,8 @@ object Rutas {
     const val PERFIL = "perfil"
     const val RESUMEN = "resumen"
     const val ACCESIBILIDAD = "accesibilidad"
+    const val PERFIL_NEGOCIO = "perfil_negocio"
+
 
     const val DETALLE_RECETA = "detalle_receta/{id}"
 
@@ -27,6 +29,7 @@ object Rutas {
         RESUMEN -> "Resumen"
         ACCESIBILIDAD -> "Accesibilidad"
         DETALLE_RECETA -> "Receta"
+        PERFIL_NEGOCIO -> "Mi negocio"
         else -> "Master Martini"
     }
 }

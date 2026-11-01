@@ -1,43 +1,68 @@
 package cl.duoc.appmastermartini_grupo6.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import cl.duoc.appmastermartini_grupo6.model.Receta
 import cl.duoc.appmastermartini_grupo6.model.RecetasUiState
 import cl.duoc.appmastermartini_grupo6.repository.ContenidoRepository
+import cl.duoc.appmastermartini_grupo6.repository.FavoritosRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-// Lógica de la pantalla de recetas: pide los datos al Repository
-// y decide qué recetas mostrar según la búsqueda.
-class RecetasViewModel(
-    private val repository: ContenidoRepository = ContenidoRepository()
-) : ViewModel() {
+// Lógica de la pantalla de recetas: búsqueda, favoritos y filtro "Mis favoritos".
+// AndroidViewModel porque FavoritosRepository necesita un Context para DataStore.
+class RecetasViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = ContenidoRepository()
+    private val favoritosRepository = FavoritosRepository(application)
 
     // Lista completa (no cambia)
     private val todasLasRecetas = repository.obtenerRecetas()
 
-    // Estado interno mutable: al inicio, sin búsqueda y con todas las recetas
     private val _estado = MutableStateFlow(RecetasUiState(recetas = todasLasRecetas))
-
-    // Estado expuesto a la UI: solo lectura
     val estado: StateFlow<RecetasUiState> = _estado.asStateFlow()
+
+    init {
+        // RECUPERAR: escucha DataStore. Cada vez que cambian los favoritos
+        // (o al abrir la app) se actualiza el estado y se vuelve a filtrar.
+        viewModelScope.launch {
+            favoritosRepository.obtener().collect { ids ->
+                _estado.update { aplicarFiltros(it.copy(favoritos = ids)) }
+            }
+        }
+    }
 
     // Se llama cada vez que el usuario escribe en el buscador
     fun onBusquedaChange(texto: String) {
-        val textoLimpio = texto.trim()
+        _estado.update { aplicarFiltros(it.copy(busqueda = texto)) }
+    }
 
-        val filtradas = if (textoLimpio.isEmpty()) {
-            todasLasRecetas
-        } else {
-            todasLasRecetas.filter { receta ->
-                receta.nombre.contains(textoLimpio, ignoreCase = true) ||
-                        receta.categoria.nombre.contains(textoLimpio, ignoreCase = true)
-            }
+    // Se llama al tocar el chip "Mis favoritos"
+    fun onSoloFavoritosChange(valor: Boolean) {
+        _estado.update { aplicarFiltros(it.copy(soloFavoritos = valor)) }
+    }
+
+    // Se llama al tocar el corazón de una receta: guarda en DataStore.
+    // La pantalla se actualiza sola porque init escucha los cambios.
+    fun onFavoritoClick(id: Int) {
+        viewModelScope.launch { favoritosRepository.alternar(id) }
+    }
+
+    // Un solo lugar donde se combinan búsqueda y filtro de favoritos
+    private fun aplicarFiltros(estado: RecetasUiState): RecetasUiState {
+        val texto = estado.busqueda.trim()
+        val filtradas = todasLasRecetas.filter { receta ->
+            val coincideBusqueda = texto.isEmpty() ||
+                    receta.nombre.contains(texto, ignoreCase = true) ||
+                    receta.categoria.nombre.contains(texto, ignoreCase = true)
+            val coincideFavorito = !estado.soloFavoritos || receta.id in estado.favoritos
+            coincideBusqueda && coincideFavorito
         }
-
-        _estado.update { it.copy(busqueda = texto, recetas = filtradas) }
+        return estado.copy(recetas = filtradas)
     }
 
     // Usado por la pantalla de detalle

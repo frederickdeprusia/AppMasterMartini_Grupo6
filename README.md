@@ -39,6 +39,7 @@ Muchos usuarios potenciales son emprendedores **mayores de 50 años**, con disti
 | **Perfil del negocio e intereses** | Formulario con lista desplegable, opciones de tamaño, casillas de preferencias, validación de RUT chileno y mensaje animado al guardar. Datos guardados con DataStore (insertar, recuperar y actualizar). |
 | **Resumen de datos** | Muestra los datos ingresados en el registro. |
 | **Modo letra grande** | Guardado en DataStore, con animaciones de color y visibilidad. |
+| ** Login y sesión** | Pantalla de carga que decide el inicio, login validado contra el usuario guardado en DataStore, sesión persistente y cierre de sesión. |
 
 ### Validaciones del formulario de negocio
 
@@ -89,6 +90,7 @@ Se usa **DataStore Preferences** con un único archivo (`preferencias_usuario`).
 | Perfil del negocio | `PerfilNegocioRepository` | `perfil_negocio_*` |
 | Foto de perfil (ruta del archivo en `filesDir`) | `PerfilFotoRepository` | `perfil_foto_ruta` |
 | Recetas favoritas | `FavoritosRepository` | `recetas_favoritas` |
+| Usuario y sesión | `UsuarioRepository` | `usuario_*`, `sesion_activa` |
 
 Se eligió DataStore porque la app guarda **un único perfil por dispositivo** y listas pequeñas de preferencias. Al estar detrás de un Repository, el almacenamiento podría migrarse a Room cambiando solo el interior de cada Repository, sin tocar ViewModels ni pantallas.
 
@@ -110,7 +112,7 @@ Se eligió DataStore porque la app guarda **un único perfil por dispositivo** y
 2. Abrir la carpeta en Android Studio con **File → Open**.
 3. Esperar a que termine el **Gradle Sync**.
 4. Seleccionar un emulador o un celular con depuración USB y presionar **Run ▶**.
-5. En el **Registro**, ingresar datos ficticios y entrar a la app.
+5. En el **Registro**, ingresar datos ficticios y entrar a la app. Al reabrir la App se entra directo al Home; con Perfil -> Cerrar sesión vuelve al login.
 
 **Datos de prueba (ficticios)**
 
@@ -143,7 +145,7 @@ Las capturas de pantalla de cada funcionalidad terminada están adjuntas en las 
 
 ## Pendientes y mejoras futuras
 
-- **Login con sesión persistente** (T13): no incluido en esta entrega. Hoy la app parte siempre en el Registro al reabrirse; se retomará en la mejora para la Evaluación Final Transversal.
+
 - **Encuesta de intereses** (T11): no incluida en esta entrega; se retomará en la mejora para la Evaluación Final Transversal.
 - Evaluar migrar la persistencia a **Room** si la app crece a múltiples usuarios o grandes volúmenes de datos.
 - Escalar el prototipo hacia una integración con la plataforma web de Master Martini.

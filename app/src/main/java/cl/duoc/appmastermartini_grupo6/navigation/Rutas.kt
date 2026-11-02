@@ -13,9 +13,9 @@ object Rutas {
     const val RESUMEN = "resumen"
     const val ACCESIBILIDAD = "accesibilidad"
     const val PERFIL_NEGOCIO = "perfil_negocio"
-
-
     const val DETALLE_RECETA = "detalle_receta/{id}"
+    const val LOGIN = "login"
+    const val CARGA = "carga"
 
     fun detalleReceta(id: Int): String = "detalle_receta/$id"
 
@@ -30,6 +30,7 @@ object Rutas {
         ACCESIBILIDAD -> "Accesibilidad"
         DETALLE_RECETA -> "Receta"
         PERFIL_NEGOCIO -> "Mi negocio"
+        LOGIN -> "Iniciar Sesión"
         else -> "Master Martini"
     }
 }

@@ -1,5 +1,6 @@
 package cl.duoc.appmastermartini_grupo6.ui.screens
 
+import androidx.compose.material3.TextButton
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -63,11 +64,16 @@ fun RegistroScreen(
         onDireccionChange = viewModel::onDireccionChange,
         onTerminosChange = viewModel::onTerminosChange,
         onRegistrar = {
-            // La validación la decide el ViewModel; la pantalla solo reacciona
-            if (viewModel.validarFormulario()) {
+            //T13: registrar() valida y si está todo bien guarda en DataStore
+            if (viewModel.registrar()) {
                 navController.navigate(Rutas.HOME) {
                     popUpTo(Rutas.REGISTRO) { inclusive = true }
                 }
+            }
+        },
+        onIrALogin = {
+            navController.navigate(Rutas.LOGIN) {
+                popUpTo(Rutas.REGISTRO) {inclusive = true}
             }
         }
     )
@@ -82,7 +88,8 @@ fun RegistroContenido(
     onClaveChange: (String) -> Unit,
     onDireccionChange: (String) -> Unit,
     onTerminosChange: (Boolean) -> Unit,
-    onRegistrar: () -> Unit
+    onRegistrar: () -> Unit,
+    onIrALogin: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -192,8 +199,17 @@ fun RegistroContenido(
         ) {
             Text("Registrar")
         }
+
+        // T13: acceso al Login para quien ya tiene cuenta
+        TextButton(
+            onClick = onIrALogin,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("¿Ya tienes cuenta? Inicia sesión")
+        }
     }
 }
+
 
 @Preview(name = "Registro - vacío", showBackground = true, widthDp = 360, heightDp = 900)
 @Composable

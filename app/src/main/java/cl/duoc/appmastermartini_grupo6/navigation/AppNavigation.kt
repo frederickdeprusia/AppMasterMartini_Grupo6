@@ -1,5 +1,6 @@
 package cl.duoc.appmastermartini_grupo6.navigation
 
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -43,6 +44,10 @@ import cl.duoc.appmastermartini_grupo6.ui.screens.CursosScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.VideosScreen
 import cl.duoc.appmastermartini_grupo6.viewmodel.CursosViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.VideosViewModel
+import cl.duoc.appmastermartini_grupo6.ui.screens.CargaScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.LoginScreen
+import cl.duoc.appmastermartini_grupo6.viewmodel.LoginViewModel
+import cl.duoc.appmastermartini_grupo6.viewmodel.SesionViewModel
 
 
 // Define la estructura de TODA la app: barra superior, barra inferior o riel lateral,
@@ -59,6 +64,8 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     val cursosViewModel: CursosViewModel = viewModel()
     val videosViewModel: VideosViewModel = viewModel()
     val perfilNegocioViewModel: PerfilNegocioViewModel = viewModel()
+    val loginViewModel: LoginViewModel = viewModel()
+    val sesionViewModel: SesionViewModel = viewModel()
 
     // Ruta actual como ESTADO: cada vez que navegamos, esta parte se vuelve a dibujar
     val entradaActual by navController.currentBackStackEntryAsState()
@@ -66,8 +73,9 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
 
     // ¿Estamos en una de las 4 secciones principales?
     val esSeccionPrincipal = DestinoPrincipal.entries.any { it.ruta == rutaActual }
-    // En el registro no mostramos barras (el usuario aún no entra a la app)
-    val mostrarBarras = rutaActual != null && rutaActual != Rutas.REGISTRO
+    // En carga, registro y login no mostramos barras ( el usuario aún no entra a la app)
+    val rutasSinBarras = listOf(Rutas.CARGA, Rutas.REGISTRO, Rutas.LOGIN)
+    val mostrarBarras = rutaActual != null && rutaActual !in rutasSinBarras
     // Diseño adaptable: en pantallas que no son compactas usamos riel lateral
     val usarRielLateral =
         obtenerWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
@@ -117,7 +125,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
 
             NavHost(
                 navController = navController,
-                startDestination = Rutas.REGISTRO,
+                startDestination = Rutas.CARGA,
                 modifier = Modifier.weight(1f),
                 // Guía 12: transiciones animadas entre pantallas
                 enterTransition = {
@@ -129,6 +137,32 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                     fadeOut(tween(300)) + slideOutHorizontally(tween(300)) { ancho -> ancho / 4 }
                 }
             ) {
+                composable(Rutas.CARGA) {
+                    val destino by sesionViewModel.destinoInicial.collectAsState()
+                    CargaScreen(
+                        destino = destino,
+                        onDestinoListo = { ruta ->
+                            navController.navigate(ruta) {
+                                popUpTo(Rutas.CARGA) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+                composable(Rutas.LOGIN) {
+                    LoginScreen(
+                        viewModel = loginViewModel,
+                        onLoginExitoso = {
+                            navController.navigate(Rutas.HOME) {
+                                popUpTo(Rutas.LOGIN) { inclusive = true }
+                            }
+                        },
+                        onIrARegistro = {
+                            navController.navigate(Rutas.REGISTRO) {
+                                popUpTo(Rutas.LOGIN) { inclusive = true }
+                            }
+                        }
+                    )
+                }
                 composable(Rutas.REGISTRO) {
                     RegistroScreen(navController, usuarioViewModel)
                 }
@@ -139,10 +173,10 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                         onVerCursos = { irASeccion(Rutas.CURSOS) }
                     )
                 }
-                composable(Rutas.RECETAS){
+                composable(Rutas.RECETAS) {
                     RecetasScreen(
                         viewModel = recetasViewModel,
-                        onRecetaClick = { id -> navController.navigate(Rutas.detalleReceta(id))}
+                        onRecetaClick = { id -> navController.navigate(Rutas.detalleReceta(id)) }
                     )
                 }
                 composable(
@@ -168,7 +202,13 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                     PerfilScreen(
                         viewModel = perfilViewModel,
                         onVerDatos = { navController.navigate(Rutas.RESUMEN) },
-                        onVerNegocio = { navController.navigate(Rutas.PERFIL_NEGOCIO) }
+                        onVerNegocio = { navController.navigate(Rutas.PERFIL_NEGOCIO) },
+                        onCerrarSesion = {
+                            //Borra todo el historial: el botón atrás no vuelve a la app
+                            navController.navigate(Rutas.LOGIN) {
+                                popUpTo(navController.graph.id) { inclusive = true }
+                            }
+                        }
                     )
                 }
                 composable(Rutas.RESUMEN) {

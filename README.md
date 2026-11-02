@@ -39,7 +39,7 @@ Muchos usuarios potenciales son emprendedores **mayores de 50 años**, con disti
 | **Perfil del negocio e intereses** | Formulario con lista desplegable, opciones de tamaño, casillas de preferencias, validación de RUT chileno y mensaje animado al guardar. Datos guardados con DataStore (insertar, recuperar y actualizar). |
 | **Resumen de datos** | Muestra los datos ingresados en el registro. |
 | **Modo letra grande** | Guardado en DataStore, con animaciones de color y visibilidad. |
-| ** Login y sesión** | Pantalla de carga que decide el inicio, login validado contra el usuario guardado en DataStore, sesión persistente y cierre de sesión. |
+| **Login y sesión** | Pantalla de carga que decide el inicio, login validado contra el usuario guardado en DataStore, sesión persistente y cierre de sesión. |
 
 ### Validaciones del formulario de negocio
 

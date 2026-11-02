@@ -45,7 +45,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun PerfilScreen(viewModel: PerfilViewModel,
                  onVerDatos: () -> Unit = {},
-                 onVerNegocio: () -> Unit = {}) {
+                 onVerNegocio: () -> Unit = {},
+                 onCerrarSesion: () -> Unit = {}) {
     val context = LocalContext.current
 
     // Estado observado desde el ViewModel (StateFlow -> collectAsState)
@@ -182,6 +183,11 @@ fun PerfilScreen(viewModel: PerfilViewModel,
                 .height(56.dp)
         ) {
             Text("Ver mis datos de registro")
+        }
+
+        //T13: cerrar sesión
+        TextButton(onClick = onCerrarSesion) {
+            Text("Cerrar sesión", color = MaterialTheme.colorScheme.error)
         }
 
         // Retroalimentación animada

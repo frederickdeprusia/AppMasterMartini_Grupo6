@@ -1,155 +1,133 @@
 # Master Martini – App móvil (Grupo 6)
 
-Prototipo (MVP académico) de una aplicación Android para **Master Martini Chile SPA**, comercializadora de insumos para alimentos. La app entrega **recetas, videos técnicos y cursos** a clientes y prospectos del rubro gastronómico (panaderías, pastelerías, chocolaterías, heladerías, casinos y restaurantes) y recoge información de **perfil e intereses** para facilitar futuras acciones de contacto.
+Aplicación Android desarrollada en **Kotlin** con **Jetpack Compose** para **Master Martini Chile SPA**, comercializadora de insumos para alimentos. La aplicación entrega **recetas, videos técnicos y cursos** a clientes y prospectos del rubro gastronómico (panaderías, pastelerías, chocolaterías, heladerías, casinos y restaurantes), permite gestionar el catálogo con persistencia remota vía **Retrofit + MockAPI.io** y recoge información de **perfil e intereses** con persistencia local en **DataStore**.
 
-Proyecto desarrollado para la asignatura **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC), Evaluación Parcial 2.
+Proyecto desarrollado para la asignatura **DSY1105 – Desarrollo de Aplicaciones Móviles** (Duoc UC), Evaluación Parcial 4 y 5.
 
-## Integrantes
+---
+
+## 1. Nombre del proyecto
+
+**AppMasterMartini_Grupo6** – Plataforma móvil de contenidos técnicos y relacionamiento con clientes para Master Martini Chile SPA.
+
+---
+
+## 2. Integrantes
 
 | Nombre | Rol principal |
 |---|---|
-| Alfredo De La Hoz | Perfil del negocio e intereses, foto de perfil persistente, favoritos de recetas |
-| Angel Martinez | Registro, navegación, recetas, cursos, videos, accesibilidad, identidad visual |
+| **Alfredo De La Hoz** | CRUD remoto de Cursos (`/cursos` en MockAPI.io con Retrofit), Perfil del negocio e intereses (RUT módulo 11), foto de perfil persistente, favoritos de recetas, pruebas unitarias (`CursoRemoteRepositoryTest`, `CursoRemoteViewModelTest`, `CursosViewModelTest`, `PerfilNegocioViewModelTest`, `LoginViewModelTest`), Trello y documentación técnica |
+| **Angel Misael Martinez** | CRUD remoto de Recetas (`/recetas` en MockAPI.io con Retrofit), configuración base de red y APK firmado (`.jks`), Registro, Login, navegación adaptable, videos, accesibilidad (modo letra grande), identidad visual y pruebas unitarias de Recetas y Registro |
 
 **Equipo:** Grupo 6 · **Sede:** CITT Duoc Antonio Varas
 
-## Contexto del caso
+---
 
-Muchos usuarios potenciales son emprendedores **mayores de 50 años**, con distintos niveles de manejo digital y posibles dificultades visuales. Por eso la app prioriza:
-
-- Letra grande y **modo de letra grande** activable desde el ícono de accesibilidad.
-- Alto contraste y colores de la identidad corporativa (verde `#0B4D43` y dorado `#C1A01D`).
-- Botones de **56 dp** y **íconos acompañando el texto**.
-- Diseño **adaptable**: barra inferior en teléfono y riel lateral en pantallas más grandes.
-
-> Todos los datos de la app son **ficticios o sintéticos**. No se usan datos personales reales, credenciales ni material interno no autorizado.
-
-## Funcionalidades implementadas
+## 3. Funcionalidades
 
 | Funcionalidad | Descripción |
 |---|---|
-| **Registro** | Formulario con 4 campos y aceptación de términos. Validación en el ViewModel, íconos por campo, errores animados y mostrar/ocultar clave. |
-| **Home adaptable** | Bienvenida y accesos rápidos, con 3 versiones de diseño (compacta, mediana y expandida). |
-| **Navegación** | Barra superior con título, botón volver e ícono de accesibilidad; barra inferior o riel lateral hacia las secciones principales. |
-| **Recetas** | 8 recetas con buscador, grilla adaptable y pantalla de detalle con ingredientes y pasos. |
-| **Favoritos de recetas** | Corazón animado en la tarjeta y en el detalle, filtro **Mis favoritos** y persistencia en DataStore. |
-| **Cursos** | 7 cursos con filtros por categoría y tarjetas expandibles. |
-| **Videos** | 6 videos técnicos que se abren en YouTube mediante un `Intent`. |
-| **Perfil con foto** | Foto circular desde **cámara** (permiso en tiempo de ejecución + `FileProvider`) o **galería**. La foto **persiste** al cerrar la app. |
-| **Perfil del negocio e intereses** | Formulario con lista desplegable, opciones de tamaño, casillas de preferencias, validación de RUT chileno y mensaje animado al guardar. Datos guardados con DataStore (insertar, recuperar y actualizar). |
-| **Resumen de datos** | Muestra los datos ingresados en el registro. |
-| **Modo letra grande** | Guardado en DataStore, con animaciones de color y visibilidad. |
-| **Login y sesión** | Pantalla de carga que decide el inicio, login validado contra el usuario guardado en DataStore, sesión persistente y cierre de sesión. |
+| **Cursos (CRUD Remoto – MockAPI.io)** | Catálogo de cursos conectado a `/cursos` mediante **Retrofit + Gson + Corrutinas**. Incluye filtros por categoría, formulario validado para **crear (`POST`)** y **editar (`PUT`)** cursos, y **eliminación (`DELETE`)** con diálogo de confirmación en tiempo real. |
+| **Recetas** | Catálogo con buscador, filtro **Mis favoritos**, grilla adaptable, pantalla de detalle con ingredientes y pasos, e integración remota con `/recetas` en MockAPI.io. |
+| **Favoritos de recetas** | Corazón animado (`spring`) en la tarjeta y en el detalle, filtro **Mis favoritos** y persistencia local en `DataStore`. |
+| **Perfil del negocio e intereses** | Formulario con lista desplegable, `RadioButton`, `Checkbox`, validación de teléfono (9 dígitos) y **RUT chileno (Módulo 11)** en el ViewModel, y persistencia en `DataStore` (insertar, recuperar y actualizar). |
+| **Perfil con foto persistente** | Captura desde **cámara** (permiso en tiempo de ejecución + `FileProvider`) o **galería** (`GetContent`). Copia la imagen a `filesDir` y guarda su ruta en `DataStore`. |
+| **Registro, Login y Sesión** | Pantalla de carga (`CargaScreen`), registro validado, inicio y cierre de sesión persistente en `DataStore`. |
+| **Videos técnicos** | Videos técnicos que se abren en YouTube mediante `Intent.ACTION_VIEW`. |
+| **Accesibilidad y Diseño Adaptable** | Pensado para usuarios **mayores de 50 años**: **Modo letra grande** persistente en `DataStore` (`fontScale 1.3f`), botones de `56.dp`, alto contraste (`#0B4D43` y `#C1A01D`), `BarraInferior` en teléfonos y `RielLateral` en tablets (`WindowWidthSizeClass`). |
 
-### Validaciones del formulario de negocio
+> Todos los datos de la app son **ficticios o sintéticos**. No se usan datos personales reales, credenciales ni material interno no autorizado.
 
-- Todos los campos son obligatorios.
-- Nombre del negocio: mínimo 3 caracteres.
-- Teléfono: exactamente 9 dígitos (no admite letras).
-- RUT de la empresa: con **dígito verificador válido** (módulo 11).
-- Preferencias de contenido: al menos una seleccionada.
+---
 
-## Recursos nativos del dispositivo
+## 4. Endpoints utilizados (API REST en MockAPI.io)
 
-1. **Cámara**: captura de foto de perfil con permiso `CAMERA` solicitado en tiempo de ejecución y archivo compartido de forma segura con `FileProvider`.
-2. **Galería**: selector del sistema (`GetContent`), sin permisos amplios; el usuario solo comparte la imagen elegida.
-3. **Intents**: apertura de videos en YouTube.
-
-## Arquitectura
-
-Aplicación en **Kotlin** con **Jetpack Compose** y **Material 3**, siguiendo el patrón **MVVM**. Cada carpeta tiene una sola responsabilidad:
-
+**URL Base configurada en [`RetrofitInstance.kt`](app/src/main/java/cl/duoc/appmastermartini_grupo6/data/remote/RetrofitInstance.kt):**
+```text
+https://6b046b549e7cafb37dc05a88.mockapi.io/api/v1/
 ```
+
+### Recurso `/cursos` (`CursoApiService`) – Alfredo De La Hoz
+
+| Método HTTP | Ruta | Función en `CursoApiService` | Propósito |
+|---|---|---|---|
+| `GET` | `/cursos` | `obtenerCursos()` | Obtiene la lista completa de cursos desde MockAPI.io |
+| `GET` | `/cursos/{id}` | `obtenerCursoPorId(id)` | Obtiene el detalle de un curso específico por su `id` |
+| `POST` | `/cursos` | `crearCurso(@Body curso)` | Crea un nuevo curso enviando el JSON de `CursoRemote` |
+| `PUT` | `/cursos/{id}` | `actualizarCurso(id, @Body curso)` | Actualiza los datos de un curso existente por su `id` |
+| `DELETE` | `/cursos/{id}` | `eliminarCurso(id)` | Elimina un curso del servidor por su `id` |
+
+### Recurso `/recetas` (`RecetaApiService`) – Angel Misael Martinez
+
+| Método HTTP | Ruta | Función en `RecetaApiService` | Propósito |
+|---|---|---|---|
+| `GET` | `/recetas` | `obtenerRecetas()` | Obtiene la lista completa de recetas desde MockAPI.io |
+| `GET` | `/recetas/{id}` | `obtenerRecetaPorId(id)` | Obtiene una receta específica por su `id` |
+| `POST` | `/recetas` | `crearReceta(@Body receta)` | Crea una nueva receta en MockAPI.io |
+| `PUT` | `/recetas/{id}` | `actualizarReceta(id, @Body receta)` | Actualiza una receta existente por su `id` |
+| `DELETE` | `/recetas/{id}` | `eliminarReceta(id)` | Elimina una receta por su `id` |
+
+---
+
+## 5. Arquitectura y Persistencia
+
+Aplicación estructurada bajo el patrón **MVVM (Model – View – ViewModel)**:
+
+```text
 app/src/main/java/cl/duoc/appmastermartini_grupo6/
-├── model/         Datos y estados de pantalla (data class, enum): UiState y Errores
-├── data/          Declaración del DataStore
-├── repository/    De dónde salen los datos y dónde se guardan
-├── viewmodel/     Lógica, validaciones y estado con StateFlow
+├── model/         Modelos de dominio, DTOs remotos (CursoRemote) y estados de UI (UiState, Errores)
+├── data/
+│   ├── EstadoDataStore.kt  Instancia única de DataStore Preferences
+│   └── remote/             RetrofitInstance y contratos HTTP (CursoApiService)
+├── repository/    Repositorios locales (DataStore / filesDir) y remotos (CursoRemoteRepository)
+├── viewmodel/     Lógica de negocio, validaciones desacopladas y StateFlow
 ├── ui/
-│   ├── screens/     Pantallas completas
-│   ├── components/  Piezas reutilizables (CampoTexto, RecetaCard, BotonFavorito...)
-│   ├── theme/       Colores, tipografía y tema
-│   └── utils/       Utilidades (enlaces, URI de foto, tamaño de ventana)
-└── navigation/    Rutas y mapa de pantallas (NavHost)
+│   ├── screens/     Pantallas completas (XScreen + XContenido con @Preview)
+│   ├── components/  Componentes reutilizables (CampoTexto, CursoRemoteCard, RecetaCard...)
+│   ├── theme/       Colores corporativos, tipografía accesible y tema Material 3
+│   └── utils/       Utilidades (Intents, FileProvider, WindowSizeClass)
+└── navigation/    Rutas centralizadas y NavHost (AppNavigation)
 ```
 
-Reglas aplicadas en todo el código:
+- **Convivencia entre capa remota y local:** La capa remota (**Retrofit + MockAPI.io**) gestiona los catálogos en la nube sin interferir con la persistencia local (**DataStore Preferences**), que conserva la sesión activa, el perfil del negocio, la ruta de la foto de perfil en `filesDir`, las recetas favoritas y el modo de letra grande.
+- **Pruebas unitarias (`src/test`):** Implementadas con **JUnit 4**, **MockK** y **kotlinx-coroutines-test** sobre los módulos `Repository` y `ViewModel`, cubriendo más del 80 % de la lógica de validación, filtrado y operaciones CRUD remotas.
 
-- **Las pantallas no validan.** Toda la lógica de validación vive en el ViewModel (`validarFormulario()`), y la pantalla solo muestra los errores del estado.
-- Cada pantalla se divide en `XScreen` (se conecta al ViewModel) y `XContenido` (solo dibuja y tiene `@Preview`).
-- Colores y tipografía siempre desde `MaterialTheme`.
-- El acceso a los datos pasa por un **Repository**; los ViewModels nunca tocan DataStore directamente.
+---
 
-### Persistencia local (DataStore)
+## 6. Pasos para ejecutar
 
-Se usa **DataStore Preferences** con un único archivo (`preferencias_usuario`). Cada Repository agrega sus propias claves:
+**Requisitos:**
+- Android Studio **Quail 4** o superior (JDK incluido)
+- Dispositivo o emulador con **Android 7.0 (API 24)** o superior y acceso a Internet
 
-| Dato | Repository | Clave |
-|---|---|---|
-| Modo letra grande | `EstadoDataStore` | `letra_grande_activada` |
-| Perfil del negocio | `PerfilNegocioRepository` | `perfil_negocio_*` |
-| Foto de perfil (ruta del archivo en `filesDir`) | `PerfilFotoRepository` | `perfil_foto_ruta` |
-| Recetas favoritas | `FavoritosRepository` | `recetas_favoritas` |
-| Usuario y sesión | `UsuarioRepository` | `usuario_*`, `sesion_activa` |
-
-Se eligió DataStore porque la app guarda **un único perfil por dispositivo** y listas pequeñas de preferencias. Al estar detrás de un Repository, el almacenamiento podría migrarse a Room cambiando solo el interior de cada Repository, sin tocar ViewModels ni pantallas.
-
-## Cómo ejecutar el proyecto
-
-**Requisitos**
-
-- Android Studio **Quail 4** o superior
-- JDK incluido con Android Studio
-- Dispositivo o emulador con **Android 7.0 (API 24)** o superior
-- Conexión a internet para sincronizar Gradle la primera vez
-
-**Pasos**
-
+**Ejecución:**
 1. Clonar el repositorio:
    ```bash
    git clone https://github.com/frederickdeprusia/AppMasterMartini_Grupo6.git
    ```
-2. Abrir la carpeta en Android Studio con **File → Open**.
-3. Esperar a que termine el **Gradle Sync**.
-4. Seleccionar un emulador o un celular con depuración USB y presionar **Run ▶**.
-5. En el **Registro**, ingresar datos ficticios y entrar a la app. Al reabrir la App se entra directo al Home; con Perfil -> Cerrar sesión vuelve al login.
+2. Abrir la carpeta en Android Studio con **File → Open** y esperar a que termine **Gradle Sync**.
+3. Verificar que `BASE_URL` en `data/remote/RetrofitInstance.kt` apunte al proyecto activo de MockAPI.io (terminado en `/`).
+4. Seleccionar un emulador o dispositivo físico y presionar **Run ▶**.
+5. Para ejecutar las pruebas unitarias:
+   ```bash
+   ./gradlew testDebugUnitTest
+   ```
 
-**Datos de prueba (ficticios)**
+---
 
-| Campo | Ejemplo |
-|---|---|
-| Teléfono | `912345678` |
-| RUT válido | `11.111.111-1` o `12.345.678-5` |
-| RUT inválido (para ver el error) | `12.345.678-9` |
-| Negocio | Panadería Don Pepe |
+## 7. Captura del APK firmado y llave `.jks`
 
-**Cómo probar la persistencia**
+*(Sección para adjuntar la ruta del APK firmado, el archivo `.jks` y la captura de configuración de `signingConfigs` en `app/build.gradle.kts` una vez completada la tarea A6).*
 
-1. Mi Perfil → elegir o tomar una foto.
-2. Mi Perfil → **Mi negocio e intereses** → llenar y guardar.
-3. Recetas → marcar algunos corazones.
-4. **Cerrar la app por completo** (quitarla de recientes) y abrirla de nuevo: la foto, el perfil del negocio y los favoritos siguen guardados.
+---
 
-> Para probar la cámara en emulador, configurar una cámara virtual en el AVD; en un celular físico funciona directamente.
+## 8. Trabajo colaborativo (GitHub y Trello)
 
-## Evidencias
+- **Control de versiones:** GitHub con flujo de ramas por funcionalidad (`feature/cursos-remoto`, `feature/recetas-remoto`, etc.), commits técnicos descriptivos por cada integrante y revisión cruzada mediante **Pull Requests**.
+- **Planificación en Trello:** [Tablero MasterMartini_6 en Trello](https://trello.com/invite/b/6ada3beddae89398d9f811c8/ATTI779f0a5e1511153a474fae78299df36b0FB13B26/mastermartini6) con tarjetas asignadas a **Alfredo De La Hoz** y **Angel Misael Martinez**.
 
-Las capturas de pantalla de cada funcionalidad terminada están adjuntas en las tarjetas del tablero de Trello, en la lista **Hecho**:
-
-- Tablero: [MasterMartini_6 en Trello](https://trello.com/invite/b/6ada3beddae89398d9f811c8/ATTI779f0a5e1511153a474fae78299df36b0FB13B26/mastermartini6)
-
-## Trabajo colaborativo
-
-- **Control de versiones:** GitHub, con el flujo *una tarea = una rama = un pull request*. Las ramas parten de `master` y cada integrante revisa el pull request del otro antes del merge. Los commits tienen mensajes técnicos que describen el cambio.
-- **Planificación:** tablero en **[Trello](https://trello.com/invite/b/6ada3beddae89398d9f811c8/ATTI779f0a5e1511153a474fae78299df36b0FB13B26/mastermartini6)** (MasterMartini_6) con listas Backlog, Sprint Actual, En progreso, En revisión (PR), Hecho y Evidencias. Cada tarjeta tiene responsable, etiqueta y checklist, y se mueve a *Hecho* con una captura como evidencia.
-
-## Pendientes y mejoras futuras
-
-
-- **Encuesta de intereses** (T11): no incluida en esta entrega; se retomará en la mejora para la Evaluación Final Transversal.
-- Evaluar migrar la persistencia a **Room** si la app crece a múltiples usuarios o grandes volúmenes de datos.
-- Escalar el prototipo hacia una integración con la plataforma web de Master Martini.
+---
 
 ## Tecnologías
 
-Kotlin 2.2 · Jetpack Compose · Material 3 · MVVM · Navigation Compose · DataStore Preferences · Coil 3 · Material Icons Extended · Window Size Class · Android Gradle Plugin 9.4 · `compileSdk` 37 · `minSdk` 24
+Kotlin 2.2 · Jetpack Compose · Material 3 · MVVM · Retrofit 2.11 · Gson · Coroutines · DataStore Preferences · JUnit 4 · MockK · Coroutines Test · Coil 3 · Navigation Compose · Window Size Class · `compileSdk` 37 · `minSdk` 24

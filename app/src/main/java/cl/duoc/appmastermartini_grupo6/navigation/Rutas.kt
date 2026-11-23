@@ -17,6 +17,7 @@ object Rutas {
     const val LOGIN = "login"
     const val CARGA = "carga"
     const val CURSO_FORM = "curso_form"
+    const val RECETA_FORM = "receta_form" // <-- NUEVA RUTA
 
     fun detalleReceta(id: Int): String = "detalle_receta/$id"
 
@@ -33,6 +34,7 @@ object Rutas {
         PERFIL_NEGOCIO -> "Mi negocio"
         LOGIN -> "Iniciar Sesión"
         CURSO_FORM -> "Gestión de Curso"
+        RECETA_FORM -> "Gestión de Receta" // <-- NUEVO TÍTULO
         else -> "Master Martini"
     }
 }

@@ -49,6 +49,8 @@ import cl.duoc.appmastermartini_grupo6.ui.screens.CargaScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.LoginScreen
 import cl.duoc.appmastermartini_grupo6.viewmodel.LoginViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.SesionViewModel
+import cl.duoc.appmastermartini_grupo6.ui.screens.RecetaFormScreen
+import cl.duoc.appmastermartini_grupo6.viewmodel.RecetaRemoteViewModel
 
 
 // Define la estructura de TODA la app: barra superior, barra inferior o riel lateral,
@@ -62,6 +64,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
     val recetasViewModel: RecetasViewModel = viewModel()
+    val recetaRemoteViewModel: RecetaRemoteViewModel = viewModel()
     val cursoRemoteViewModel: CursoRemoteViewModel = viewModel()
     val videosViewModel: VideosViewModel = viewModel()
     val perfilNegocioViewModel: PerfilNegocioViewModel = viewModel()
@@ -176,8 +179,25 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                 }
                 composable(Rutas.RECETAS) {
                     RecetasScreen(
-                        viewModel = recetasViewModel,
-                        onRecetaClick = { id -> navController.navigate(Rutas.detalleReceta(id)) }
+                        localViewModel = recetasViewModel,
+                        remoteViewModel = recetaRemoteViewModel,
+                        onRecetaClick = {id ->
+                            navController.navigate(Rutas.detalleReceta(id)) },
+                        onNuevaReceta = {
+                            recetaRemoteViewModel.prepararNuevaReceta()
+                            navController.navigate(Rutas.RECETA_FORM)
+                        },
+                        onEditarReceta = {id ->
+                            recetaRemoteViewModel.prepararEdicion(id)
+                            navController.navigate(Rutas.RECETA_FORM)
+                        }
+                    )
+                }
+                composable (Rutas.RECETA_FORM){
+                    RecetaFormScreen(
+                        viewModel = recetaRemoteViewModel,
+                        onGuardado = { navController.popBackStack() },
+                        onCancelar = { navController.popBackStack() }
                     )
                 }
                 composable(

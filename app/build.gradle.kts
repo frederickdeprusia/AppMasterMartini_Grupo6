@@ -33,6 +33,24 @@ android {
     buildFeatures {
         compose = true
     }
+
+    signingConfigs{
+        create("release") {
+            storeFile = file("mastermartini.jks")
+            storePassword = "duoc2026"
+            keyAlias = "mastermartini"
+            keyPassword = "duoc2026"
+        }
+    }
+
+    buildTypes {
+        release{
+            signingConfig = signingConfigs.getByName("release")
+            optimization{
+                enable = false
+            }
+        }
+    }
 }
 
 dependencies {

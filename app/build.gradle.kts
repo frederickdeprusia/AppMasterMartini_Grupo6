@@ -52,7 +52,14 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     // Guía 13: Coil para cargar imágenes desde un Uri (galería / cámara)
     implementation(libs.coil.compose)
+    // EA3: Consumo de API REST en MockAPI.io con Retrofit + Gson + Corrutinas
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
+    // EA3: Pruebas unitarias con MockK y Coroutines Test
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

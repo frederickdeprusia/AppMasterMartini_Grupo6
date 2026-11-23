@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- EA3: permiso de conexión a Internet para consumir la API REST en MockAPI.io -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- Guía 13: la cámara es opcional; la app se puede instalar en equipos sin cámara -->
     <uses-feature
         android:name="android.hardware.camera"
@@ -26,6 +29,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppMasterMartini_Grupo6">
         <activity
             android:name=".MainActivity"

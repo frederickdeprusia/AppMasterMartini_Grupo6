@@ -17,8 +17,12 @@ object RetrofitInstance {
     }
 
     // API para el recurso /cursos (Alfredo De La Hoz)
-    // Angel Misael Martinez agregará aquí su propiedad recetaApi con by lazy.
     val cursoApi: CursoApiService by lazy {
         retrofit.create(CursoApiService::class.java)
+    }
+
+    // API para el recurso /recetas (Angel Misael Martinez)
+    val recetaApi: RecetaApiService by lazy {
+        retrofit.create(RecetaApiService::class.java)
     }
 }

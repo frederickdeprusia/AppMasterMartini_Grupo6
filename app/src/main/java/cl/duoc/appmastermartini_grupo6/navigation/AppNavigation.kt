@@ -41,8 +41,9 @@ import cl.duoc.appmastermartini_grupo6.ui.screens.DetalleRecetaScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.RecetasScreen
 import cl.duoc.appmastermartini_grupo6.viewmodel.RecetasViewModel
 import cl.duoc.appmastermartini_grupo6.ui.screens.CursosScreen
+import cl.duoc.appmastermartini_grupo6.ui.screens.CursoFormScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.VideosScreen
-import cl.duoc.appmastermartini_grupo6.viewmodel.CursosViewModel
+import cl.duoc.appmastermartini_grupo6.viewmodel.CursoRemoteViewModel
 import cl.duoc.appmastermartini_grupo6.viewmodel.VideosViewModel
 import cl.duoc.appmastermartini_grupo6.ui.screens.CargaScreen
 import cl.duoc.appmastermartini_grupo6.ui.screens.LoginScreen
@@ -61,7 +62,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
     val recetasViewModel: RecetasViewModel = viewModel()
-    val cursosViewModel: CursosViewModel = viewModel()
+    val cursoRemoteViewModel: CursoRemoteViewModel = viewModel()
     val videosViewModel: VideosViewModel = viewModel()
     val perfilNegocioViewModel: PerfilNegocioViewModel = viewModel()
     val loginViewModel: LoginViewModel = viewModel()
@@ -193,7 +194,24 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                     )
                 }
                 composable(Rutas.CURSOS) {
-                    CursosScreen(viewModel = cursosViewModel)
+                    CursosScreen(
+                        viewModel = cursoRemoteViewModel,
+                        onNuevoCurso = {
+                            cursoRemoteViewModel.prepararNuevoCurso()
+                            navController.navigate(Rutas.CURSO_FORM)
+                        },
+                        onEditarCurso = { id ->
+                            cursoRemoteViewModel.prepararEdicion(id)
+                            navController.navigate(Rutas.CURSO_FORM)
+                        }
+                    )
+                }
+                composable(Rutas.CURSO_FORM) {
+                    CursoFormScreen(
+                        viewModel = cursoRemoteViewModel,
+                        onGuardado = { navController.popBackStack() },
+                        onCancelar = { navController.popBackStack() }
+                    )
                 }
                 composable(Rutas.VIDEOS) {
                     VideosScreen(viewModel = videosViewModel)
@@ -204,6 +222,7 @@ fun AppNavigation(estadoViewModel: EstadoViewModel) {
                         onVerDatos = { navController.navigate(Rutas.RESUMEN) },
                         onVerNegocio = { navController.navigate(Rutas.PERFIL_NEGOCIO) },
                         onCerrarSesion = {
+                            sesionViewModel.cerrarSesion()
                             //Borra todo el historial: el botón atrás no vuelve a la app
                             navController.navigate(Rutas.LOGIN) {
                                 popUpTo(navController.graph.id) { inclusive = true }

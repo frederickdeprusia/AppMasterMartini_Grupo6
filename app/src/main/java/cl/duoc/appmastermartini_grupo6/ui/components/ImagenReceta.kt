@@ -23,6 +23,18 @@ import androidx.compose.ui.unit.dp
 import cl.duoc.appmastermartini_grupo6.model.CategoriaReceta
 import cl.duoc.appmastermartini_grupo6.ui.theme.AppMasterMartini_Grupo6Theme
 
+// Traduce un nombre de categoría en texto (usado en JSON de MockAPI) a CategoriaReceta.
+fun categoriaDesdeTexto(nombre: String): CategoriaReceta = when (nombre.lowercase().trim()) {
+    "chocolateria", "chocolatería" -> CategoriaReceta.CHOCOLATERIA
+    "pasteleria", "pastelería" -> CategoriaReceta.PASTELERIA
+    "galletas" -> CategoriaReceta.GALLETAS
+    "bolleria", "bollería" -> CategoriaReceta.BOLLERIA
+    "heladeria", "heladería" -> CategoriaReceta.HELADERIA
+    "panaderia", "panadería" -> CategoriaReceta.PANADERIA
+    "empanadas" -> CategoriaReceta.EMPANADAS
+    else -> CategoriaReceta.PASTELERIA
+}
+
 // Traduce la categoría (dato del modelo) a un ícono (algo visual).
 // Está en la capa UI porque el modelo no debe saber de íconos.
 fun iconoDeCategoria(categoria: CategoriaReceta): ImageVector = when (categoria) {

@@ -16,6 +16,7 @@ object Rutas {
     const val DETALLE_RECETA = "detalle_receta/{id}"
     const val LOGIN = "login"
     const val CARGA = "carga"
+    const val CURSO_FORM = "curso_form"
 
     fun detalleReceta(id: Int): String = "detalle_receta/$id"
 
@@ -31,6 +32,7 @@ object Rutas {
         DETALLE_RECETA -> "Receta"
         PERFIL_NEGOCIO -> "Mi negocio"
         LOGIN -> "Iniciar Sesión"
+        CURSO_FORM -> "Gestión de Curso"
         else -> "Master Martini"
     }
 }

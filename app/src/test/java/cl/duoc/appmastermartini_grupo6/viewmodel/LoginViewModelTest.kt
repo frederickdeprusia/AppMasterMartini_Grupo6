@@ -20,7 +20,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-// EA3 - Paso 8 (Tarea B5): Pruebas unitarias de LoginViewModel con MockK y coroutines-test.
+// EA3 - Pruebas unitarias del formulario Login (exactamente 3 pruebas: Camino feliz, Camino triste y Camino random).
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
@@ -42,21 +42,9 @@ class LoginViewModelTest {
         Dispatchers.resetMain()
     }
 
+    // 1. CAMINO FELIZ: el usuario ingresa correo y contraseña correctos
     @Test
-    fun `validarFormulario rechaza correo vacio, correo sin formato y clave vacia`() {
-        assertFalse(viewModel.validarFormulario())
-        assertEquals("Campo obligatorio", viewModel.estado.value.errores.correo)
-        assertEquals("Campo obligatorio", viewModel.estado.value.errores.clave)
-
-        viewModel.onCorreoChange("correo_invalido")
-        viewModel.onClaveChange("123456")
-        assertFalse(viewModel.validarFormulario())
-        assertEquals("Correo inválido", viewModel.estado.value.errores.correo)
-        assertNull(viewModel.estado.value.errores.clave)
-    }
-
-    @Test
-    fun `iniciarSesion con credenciales validas activa la sesion y llama a onExito`() = runTest(testDispatcher) {
+    fun `camino feliz - login con credenciales validas activa la sesion y entra a la app`() = runTest(testDispatcher) {
         coEvery { mockRepository.credencialesValidas("chef@martini.cl", "secreto123") } returns true
         coEvery { mockRepository.cambiarSesion(true) } returns Unit
 
@@ -68,15 +56,24 @@ class LoginViewModelTest {
         advanceUntilIdle()
 
         assertTrue(loginExitoso)
+        assertNull(viewModel.estado.value.errores.correo)
+        assertNull(viewModel.estado.value.errores.clave)
+        assertNull(viewModel.estado.value.errores.general)
         coVerify(exactly = 1) { mockRepository.cambiarSesion(true) }
     }
 
+    // 2. CAMINO TRISTE: el usuario deja los campos vacios o ingresa credenciales incorrectas
     @Test
-    fun `iniciarSesion con credenciales incorrectas muestra mensaje de error general`() = runTest(testDispatcher) {
-        coEvery { mockRepository.credencialesValidas("chef@martini.cl", "incorrecta") } returns false
+    fun `camino triste - campos vacios y credenciales incorrectas muestran error sin iniciar sesion`() = runTest(testDispatcher) {
+        // Primero intenta con todo vacío
+        assertFalse(viewModel.validarFormulario())
+        assertEquals("Campo obligatorio", viewModel.estado.value.errores.correo)
+        assertEquals("Campo obligatorio", viewModel.estado.value.errores.clave)
 
+        // Luego ingresa un correo válido pero con clave incorrecta
+        coEvery { mockRepository.credencialesValidas("chef@martini.cl", "claveMala") } returns false
         viewModel.onCorreoChange("chef@martini.cl")
-        viewModel.onClaveChange("incorrecta")
+        viewModel.onClaveChange("claveMala")
 
         var loginExitoso = false
         viewModel.iniciarSesion(onExito = { loginExitoso = true })
@@ -85,5 +82,21 @@ class LoginViewModelTest {
         assertFalse(loginExitoso)
         assertEquals("Correo o contraseña incorrectos", viewModel.estado.value.errores.general)
         coVerify(exactly = 0) { mockRepository.cambiarSesion(true) }
+    }
+
+    // 3. CAMINO RANDOM: el usuario ingresa caracteres inesperados, simbolos y solo espacios en blanco
+    @Test
+    fun `camino random - entradas inesperadas con simbolos y espacios no rompen el formulario`() = runTest(testDispatcher) {
+        viewModel.onCorreoChange("   ###@@@no-es-correo!!!   ")
+        viewModel.onClaveChange("      ")
+
+        var loginExitoso = false
+        viewModel.iniciarSesion(onExito = { loginExitoso = true })
+        advanceUntilIdle()
+
+        assertFalse(loginExitoso)
+        assertEquals("Correo inválido", viewModel.estado.value.errores.correo)
+        assertEquals("Campo obligatorio", viewModel.estado.value.errores.clave)
+        coVerify(exactly = 0) { mockRepository.credencialesValidas(any(), any()) }
     }
 }

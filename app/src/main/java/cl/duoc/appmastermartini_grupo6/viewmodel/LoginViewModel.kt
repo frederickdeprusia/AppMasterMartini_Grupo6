@@ -1,7 +1,6 @@
 package cl.duoc.appmastermartini_grupo6.viewmodel
 
 import android.app.Application
-import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.appmastermartini_grupo6.model.LoginErrores
@@ -15,8 +14,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class LoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = UsuarioRepository(application)
+class LoginViewModel(
+    application: Application,
+    private val repository: UsuarioRepository
+) : AndroidViewModel(application) {
+
+    // Constructor por defecto para Compose viewModel()
+    constructor(application: Application) : this(application, UsuarioRepository(application))
+
+    // Regex de Kotlin puro para validar correo también en pruebas unitarias JUnit (sin depender de android.util.Patterns)
+    private val regexCorreo = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
 
     private val _estado = MutableStateFlow(LoginUiState())
     val estado: StateFlow<LoginUiState> = _estado.asStateFlow()
@@ -35,12 +42,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Validación de formato (antes de consultar los datos guardados)
-    private fun validarFormulario(): Boolean {
+    fun validarFormulario(): Boolean {
         val actual = _estado.value
         val errores = LoginErrores(
             correo = when {
                 actual.correo.isBlank() -> "Campo obligatorio"
-                !Patterns.EMAIL_ADDRESS.matcher(actual.correo.trim()).matches() -> "Correo inválido"
+                !regexCorreo.matches(actual.correo.trim()) -> "Correo inválido"
                 else -> null
             },
             clave = if (actual.clave.isBlank()) "Campo obligatorio" else null

@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.map
 //unica clase que sabe como se guarda el usuario y la sesión
 // Reutiliza context.dataStore , solo agrega claves nuevas
 //MVP académico: un usuario por dispositivo , con datos ficticios.
+// open class para permitir mockearla con MockK en las pruebas unitarias.
 
-class UsuarioRepository (private val context: Context) {
+open class UsuarioRepository (private val context: Context) {
 
     private val NOMBRE = stringPreferencesKey("usuario_nombre")
     private val CORREO = stringPreferencesKey("usuario_correo")
@@ -24,7 +25,7 @@ class UsuarioRepository (private val context: Context) {
 
 
     //INSERTAR / ACTUAIZAR: guarda el usuario y deja la sesión iniciada
-    suspend fun guardarUsuario(usuario: UsuarioUiState) {
+    open suspend fun guardarUsuario(usuario: UsuarioUiState) {
         context.dataStore.edit { preferencias ->
             preferencias[NOMBRE] = usuario.nombre.trim()
             preferencias[CORREO] = usuario.correo.trim().lowercase()
@@ -35,7 +36,7 @@ class UsuarioRepository (private val context: Context) {
     }
 
     // Recuperar el usuario guardado, o NULL si no está registrado
-    fun obtenerUsuario(): Flow<UsuarioUiState?>{
+    open fun obtenerUsuario(): Flow<UsuarioUiState?>{
         return context.dataStore.data.map { preferencias ->
             val correo = preferencias[CORREO]
             if (correo == null){
@@ -53,22 +54,22 @@ class UsuarioRepository (private val context: Context) {
     }
 
     //comparación de lo que escribió el usuario con lo que está guardado
-    suspend fun credencialesValidas(correo: String, clave: String): Boolean {
+    open suspend fun credencialesValidas(correo: String, clave: String): Boolean {
         val preferencias = context.dataStore.data.first()
         return preferencias[CORREO] == correo.trim().lowercase() &&
                 preferencias[CLAVE] == clave
     }
 
     //Actualizar la sesión: true al inciar, false al cerrar
-    suspend fun cambiarSesion(activa: Boolean){
+    open suspend fun cambiarSesion(activa: Boolean){
         context.dataStore.edit { preferencias ->
             preferencias[SESION_ACTIVA] = activa
         }
     }
 
-    fun haySesionActiva(): Flow<Boolean> =
+    open fun haySesionActiva(): Flow<Boolean> =
         context.dataStore.data.map {preferencias -> preferencias[SESION_ACTIVA] == true}
 
-    fun hayUsuarioRegistrado(): Flow<Boolean> =
+    open fun hayUsuarioRegistrado(): Flow<Boolean> =
         context.dataStore.data.map { preferencias -> preferencias[CORREO] != null }
 }

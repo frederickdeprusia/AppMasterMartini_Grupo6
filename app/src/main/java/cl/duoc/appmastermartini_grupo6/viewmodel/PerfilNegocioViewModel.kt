@@ -16,9 +16,13 @@ import kotlinx.coroutines.launch
 
 // AndroidViewModel porque el Repository necesita un Context para usar DataStore.
 // Aquí vive TODA la lógica: validaciones, estado y guardado. La pantalla solo dibuja.
-class PerfilNegocioViewModel(application: Application) : AndroidViewModel(application) {
+class PerfilNegocioViewModel(
+    application: Application,
+    private val repository: PerfilNegocioRepository
+) : AndroidViewModel(application) {
 
-    private val repository = PerfilNegocioRepository(application)
+    // Constructor usado por Compose viewModel() en ejecución normal
+    constructor(application: Application) : this(application, PerfilNegocioRepository(application))
 
     // Estado interno mutable: solo el ViewModel puede modificarlo
     private val _estado = MutableStateFlow(PerfilNegocioUiState())

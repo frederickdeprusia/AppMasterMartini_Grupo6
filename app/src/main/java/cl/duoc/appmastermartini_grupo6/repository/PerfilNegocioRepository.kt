@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.map
 // El ViewModel la usa sin saber si detrás hay DataStore, Room u otra cosa.
 // Reutiliza context.dataStore (declarado en data/EstadoDataStore.kt):
 // NO se crea un segundo DataStore, solo se agregan claves nuevas.
-class PerfilNegocioRepository(private val context: Context) {
+// open class para permitir mockearla con MockK en las pruebas unitarias.
+open class PerfilNegocioRepository(private val context: Context) {
 
     // Claves del archivo DataStore (una por dato guardado)
     private val EXISTE = booleanPreferencesKey("perfil_negocio_existe")
@@ -28,7 +29,7 @@ class PerfilNegocioRepository(private val context: Context) {
     // INSERTAR / ACTUALIZAR: edit crea las claves si no existen (primera vez)
     // o sobrescribe sus valores si ya existían (actualizar).
     // suspend: se ejecuta dentro de una corrutina, sin bloquear la pantalla.
-    suspend fun guardar(datos: PerfilNegocioUiState) {
+    open suspend fun guardar(datos: PerfilNegocioUiState) {
         context.dataStore.edit { preferencias ->
             preferencias[EXISTE] = true
             preferencias[NOMBRE] = datos.nombreNegocio
@@ -42,7 +43,7 @@ class PerfilNegocioRepository(private val context: Context) {
 
     // RECUPERAR: devuelve los datos guardados como Flow (reactivo).
     // Devuelve null si el usuario nunca ha guardado su perfil.
-    fun obtener(): Flow<PerfilNegocioUiState?> {
+    open fun obtener(): Flow<PerfilNegocioUiState?> {
         return context.dataStore.data.map { preferencias ->
             if (preferencias[EXISTE] != true) {
                 null
